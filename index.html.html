@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PM Starter Kit — Thais Chehab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --orange: #FF6600;
+  --orange-dim: #cc5200;
+  --orange-glow: rgba(255,102,0,0.15);
+  --orange-faint: rgba(255,102,0,0.06);
+  --bg: #0a0a0a;
+  --bg2: #111111;
+  --bg3: #161616;
+  --bg4: #1c1c1c;
+  --border: #242424;
+  --border2: #2e2e2e;
+  --white: #ffffff;
+  --gray1: #f0f0f0;
+  --gray2: #aaaaaa;
+  --gray3: #666666;
+  --gray4: #333333;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--gray1);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* ── CUSTOM CURSOR ── */
+.cursor {
+  width: 10px; height: 10px;
+  background: var(--orange);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid rgba(255,102,0,0.5);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.12s ease-out, width 0.25s, height 0.25s;
+}
+body:hover .cursor { opacity: 1; }
+a:hover ~ .cursor, button:hover ~ .cursor { width: 16px; height: 16px; }
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none; z-index: 1; opacity: 0.4;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 15px;
+  color: var(--white); letter-spacing: 0.05em;
+  text-decoration: none;
+}
+.nav-logo span { color: var(--orange); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a {
+  font-size: 13px; color: var(--gray2);
+  text-decoration: none; letter-spacing: 0.03em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--orange); }
+.nav-cta {
+  background: var(--orange); color: var(--white);
+  padding: 10px 22px; border-radius: 6px;
+  font-size: 13px; font-weight: 500;
+  text-decoration: none; letter-spacing: 0.02em;
+  transition: background 0.2s, transform 0.15s;
+}
+.nav-cta:hover { background: var(--orange-dim); transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center;
+  padding: 140px 48px 80px;
+  position: relative; overflow: hidden;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,102,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,102,0,0.04) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black, transparent);
+}
+.hero-glow {
+  position: absolute; top: -200px; right: -100px;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(255,102,0,0.12) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-glow2 {
+  position: absolute; bottom: -300px; left: -200px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(255,102,0,0.07) 0%, transparent 65%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--orange-faint);
+  border: 1px solid rgba(255,102,0,0.25);
+  color: var(--orange); font-size: 12px; font-weight: 500;
+  padding: 7px 16px; border-radius: 100px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-bottom: 36px;
+  width: fit-content;
+  animation: fadeUp 0.6s ease both;
+}
+.hero-tag::before {
+  content: '';
+  width: 7px; height: 7px;
+  background: var(--orange); border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(52px, 7vw, 96px);
+  font-weight: 800; line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: var(--white);
+  margin-bottom: 8px;
+  animation: fadeUp 0.6s 0.1s ease both;
+}
+.hero h1 .accent { color: var(--orange); }
+.hero h1 .outline {
+  -webkit-text-stroke: 2px rgba(255,255,255,0.2);
+  color: transparent;
+}
+.hero-sub {
+  font-size: 20px; font-weight: 300;
+  color: var(--gray2); max-width: 560px;
+  line-height: 1.6; margin: 28px 0 48px;
+  animation: fadeUp 0.6s 0.2s ease both;
+}
+.hero-sub strong { color: var(--gray1); font-weight: 500; }
+.hero-actions {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  animation: fadeUp 0.6s 0.3s ease both;
+}
+.btn-primary {
+  background: var(--orange); color: var(--white);
+  padding: 16px 36px; border-radius: 8px;
+  font-size: 15px; font-weight: 500;
+  text-decoration: none; border: none; cursor: none;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 0 0 0 rgba(255,102,0,0);
+}
+.btn-primary:hover {
+  background: var(--orange-dim);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255,102,0,0.3);
+}
+.btn-ghost {
+  background: transparent; color: var(--gray2);
+  padding: 16px 36px; border-radius: 8px;
+  font-size: 15px; font-weight: 400;
+  text-decoration: none;
+  border: 1px solid var(--border2); cursor: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--orange); color: var(--orange); }
+.hero-stats {
+  display: flex; gap: 48px; margin-top: 72px;
+  padding-top: 48px; border-top: 1px solid var(--border);
+  animation: fadeUp 0.6s 0.4s ease both;
+}
+.stat-num {
+  font-family: var(--font-display);
+  font-size: 36px; font-weight: 800;
+  color: var(--orange);
+}
+.stat-label { font-size: 13px; color: var(--gray3); margin-top: 2px; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── SECTION BASE ── */
+section {
+  padding: 100px 48px;
+  position: relative;
+}
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.section-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: ''; display: block;
+  width: 28px; height: 1px; background: var(--orange);
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 800; letter-spacing: -0.02em;
+  color: var(--white); line-height: 1.1;
+  margin-bottom: 20px;
+}
+.section-desc {
+  font-size: 17px; color: var(--gray2);
+  max-width: 560px; line-height: 1.7;
+}
+
+/* ── ABOUT STRIP ── */
+.about-strip {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 48px;
+}
+.about-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; align-items: center; gap: 40px;
+}
+.about-avatar {
+  width: 72px; height: 72px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), #ff9900);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 800; color: white;
+}
+.about-text { flex: 1; }
+.about-name {
+  font-family: var(--font-display);
+  font-size: 18px; font-weight: 700; color: var(--white);
+}
+.about-role { font-size: 14px; color: var(--orange); margin-top: 2px; }
+.about-bio { font-size: 15px; color: var(--gray2); margin-top: 8px; line-height: 1.6; }
+.about-link {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px; font-size: 13px;
+  color: var(--orange); text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+.about-link:hover { border-color: var(--orange); }
+
+/* ── TEMPLATES GRID ── */
+#templates { background: var(--bg); }
+.templates-header {
+  display: flex; align-items: flex-end;
+  justify-content: space-between; gap: 24px;
+  margin-bottom: 60px; flex-wrap: wrap;
+}
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+.template-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; cursor: none;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
+  position: relative;
+}
+.template-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(255,102,0,0.04), transparent 60%);
+  opacity: 0; transition: opacity 0.3s;
+  pointer-events: none;
+}
+.template-card:hover {
+  border-color: rgba(255,102,0,0.4);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,102,0,0.1);
+}
+.template-card:hover::before { opacity: 1; }
+.card-top {
+  padding: 28px 28px 0;
+  display: flex; align-items: center; gap: 16px;
+}
+.card-num {
+  font-family: var(--font-display);
+  font-size: 11px; font-weight: 700;
+  color: var(--orange); letter-spacing: 0.1em;
+  background: var(--orange-faint);
+  border: 1px solid rgba(255,102,0,0.2);
+  padding: 4px 10px; border-radius: 4px;
+  flex-shrink: 0;
+}
+.card-icon {
+  width: 40px; height: 40px;
+  background: var(--bg3); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; flex-shrink: 0;
+  border: 1px solid var(--border);
+}
+.card-body { padding: 20px 28px 28px; }
+.card-title {
+  font-family: var(--font-display);
+  font-size: 19px; font-weight: 700;
+  color: var(--white); margin-bottom: 10px;
+  line-height: 1.2;
+}
+.card-desc { font-size: 14px; color: var(--gray3); line-height: 1.6; }
+.card-tags {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  margin-top: 20px;
+}
+.card-tag {
+  font-size: 11px; color: var(--gray3);
+  border: 1px solid var(--border2);
+  padding: 4px 10px; border-radius: 4px;
+  letter-spacing: 0.03em;
+}
+.card-expand-btn {
+  width: 100%; padding: 16px 28px;
+  background: transparent; border: none;
+  border-top: 1px solid var(--border);
+  color: var(--orange); font-family: var(--font-body);
+  font-size: 13px; font-weight: 500;
+  cursor: none; text-align: left;
+  display: flex; align-items: center; justify-content: space-between;
+  transition: background 0.2s;
+}
+.card-expand-btn:hover { background: var(--orange-faint); }
+.card-expand-btn .arrow {
+  transition: transform 0.3s;
+  font-size: 18px;
+}
+.card-expand-btn.open .arrow { transform: rotate(180deg); }
+.card-content {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--bg3);
+  border-top: 1px solid var(--border);
+}
+.card-content.open { max-height: 2000px; }
+.card-content-inner { padding: 28px; }
+
+/* Template Fields */
+.field-group { margin-bottom: 20px; }
+.field-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--orange); margin-bottom: 8px;
+}
+.field-input {
+  width: 100%; background: var(--bg4);
+  border: 1px solid var(--border2); border-radius: 8px;
+  padding: 12px 16px; font-family: var(--font-body);
+  font-size: 14px; color: var(--gray1);
+  outline: none; resize: vertical; min-height: 52px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.field-input::placeholder { color: var(--gray4); }
+.field-input:focus {
+  border-color: rgba(255,102,0,0.5);
+  box-shadow: 0 0 0 3px rgba(255,102,0,0.08);
+}
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.field-hint {
+  font-size: 12px; color: var(--gray3);
+  margin-top: 6px; font-style: italic;
+}
+
+/* Table fields */
+.table-field {
+  width: 100%; border-collapse: collapse;
+  border-radius: 8px; overflow: hidden;
+  margin-bottom: 16px;
+}
+.table-field th {
+  background: var(--orange); color: white;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  padding: 10px 14px; text-align: left;
+}
+.table-field td {
+  background: var(--bg4); border: 1px solid var(--border);
+  padding: 0;
+}
+.table-field td input {
+  width: 100%; background: transparent;
+  border: none; padding: 10px 14px;
+  font-family: var(--font-body); font-size: 13px;
+  color: var(--gray1); outline: none;
+}
+.table-field tr:nth-child(even) td { background: var(--bg3); }
+
+/* ICE Score */
+.ice-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 8px; align-items: center; margin-bottom: 10px;
+}
+.ice-header {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 8px; margin-bottom: 8px;
+}
+.ice-header-cell {
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--orange);
+  text-align: center;
+}
+.ice-header-cell:first-child { text-align: left; }
+.ice-num {
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-radius: 6px; padding: 10px 8px;
+  text-align: center; font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  color: var(--white); cursor: none;
+  transition: background 0.15s, color 0.15s;
+  -webkit-appearance: none; width: 100%;
+  font-family: var(--font-body); outline: none;
+}
+.ice-num:focus { border-color: var(--orange); }
+.ice-score-display {
+  background: linear-gradient(135deg, var(--orange), #ff9900);
+  border-radius: 6px; padding: 10px 8px;
+  text-align: center; font-family: var(--font-display);
+  font-size: 16px; font-weight: 800; color: white;
+}
+
+/* Prompt cards */
+.prompt-card {
+  background: var(--bg4);
+  border: 1px solid var(--border2);
+  border-radius: 10px; margin-bottom: 14px;
+  overflow: hidden;
+}
+.prompt-header {
+  padding: 14px 18px;
+  display: flex; align-items: center; gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+.prompt-num {
+  background: var(--orange); color: white;
+  width: 28px; height: 28px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 12px; font-weight: 800;
+  flex-shrink: 0;
+}
+.prompt-title {
+  font-size: 14px; font-weight: 500; color: var(--white);
+}
+.prompt-body { padding: 16px 18px; }
+.prompt-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--orange); margin-bottom: 6px;
+}
+.prompt-text {
+  font-size: 13px; color: var(--gray2); line-height: 1.6;
+  font-style: italic; margin-bottom: 14px;
+  background: var(--bg3); border-left: 2px solid var(--orange);
+  padding: 10px 14px; border-radius: 0 6px 6px 0;
+}
+.prompt-result-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--gray3); margin-bottom: 6px;
+}
+.prompt-result { font-size: 13px; color: var(--gray3); }
+.copy-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: transparent; border: 1px solid var(--border2);
+  color: var(--gray3); font-family: var(--font-body);
+  font-size: 12px; padding: 6px 12px; border-radius: 6px;
+  cursor: none; transition: all 0.2s; margin-top: 10px;
+}
+.copy-btn:hover { border-color: var(--orange); color: var(--orange); }
+.copy-btn.copied { border-color: #22c55e; color: #22c55e; }
+
+/* DoR/DoD grid */
+.dor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.dor-card {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 18px;
+}
+.dor-title {
+  font-size: 13px; font-weight: 600; color: var(--white);
+  margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+}
+.dor-title .badge {
+  background: var(--orange-faint); border: 1px solid rgba(255,102,0,0.3);
+  color: var(--orange); font-size: 10px; padding: 2px 7px;
+  border-radius: 4px; letter-spacing: 0.04em;
+}
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  margin-bottom: 10px; font-size: 13px; color: var(--gray2);
+}
+.checklist-item input[type="checkbox"] {
+  margin-top: 2px; accent-color: var(--orange);
+  cursor: none;
+}
+
+/* AI Tip */
+.ai-tip {
+  background: linear-gradient(135deg, rgba(255,102,0,0.08), rgba(255,102,0,0.03));
+  border: 1px solid rgba(255,102,0,0.2);
+  border-radius: 8px; padding: 16px 18px;
+  margin-top: 24px; display: flex; gap: 12px; align-items: flex-start;
+}
+.ai-tip-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.ai-tip-text { font-size: 13px; color: var(--gray2); line-height: 1.6; }
+.ai-tip-text strong { color: var(--orange); font-weight: 500; }
+
+/* OKR */
+.okr-objective {
+  background: var(--bg3);
+  border: 1px solid rgba(255,102,0,0.3);
+  border-radius: 8px; padding: 18px;
+  margin-bottom: 16px;
+}
+.okr-obj-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  color: var(--orange); text-transform: uppercase; margin-bottom: 8px;
+}
+.okr-kr {
+  background: var(--bg4); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 16px; margin-bottom: 10px;
+  display: grid; grid-template-columns: 24px 1fr 90px 90px; gap: 12px;
+  align-items: start;
+}
+.kr-num {
+  background: var(--orange); color: white;
+  width: 24px; height: 24px; border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 800; flex-shrink: 0; margin-top: 2px;
+}
+.kr-label { font-size: 11px; color: var(--gray3); margin-bottom: 4px; }
+
+/* ── HOW IT WORKS ── */
+#how { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+.steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 60px; }
+.step {
+  position: relative;
+  padding: 32px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: border-color 0.25s;
+}
+.step:hover { border-color: rgba(255,102,0,0.3); }
+.step-num {
+  font-family: var(--font-display);
+  font-size: 64px; font-weight: 800;
+  color: var(--border2); line-height: 1;
+  margin-bottom: 16px; letter-spacing: -0.04em;
+}
+.step-title {
+  font-family: var(--font-display);
+  font-size: 20px; font-weight: 700;
+  color: var(--white); margin-bottom: 10px;
+}
+.step-desc { font-size: 14px; color: var(--gray3); line-height: 1.6; }
+
+/* ── CTA SECTION ── */
+#cta {
+  text-align: center; padding: 120px 48px;
+  background: var(--bg);
+  position: relative; overflow: hidden;
+}
+.cta-glow {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px; height: 300px;
+  background: radial-gradient(ellipse, rgba(255,102,0,0.1), transparent 70%);
+  pointer-events: none;
+}
+#cta .section-title { margin: 0 auto 20px; max-width: 600px; }
+#cta .section-desc { margin: 0 auto 48px; text-align: center; max-width: 480px; }
+.cta-handle {
+  margin-top: 40px; font-size: 14px; color: var(--gray3);
+}
+.cta-handle a { color: var(--orange); text-decoration: none; }
+
+/* ── FOOTER ── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  padding: 32px 48px;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  font-size: 13px; color: var(--gray3);
+}
+footer a { color: var(--orange); text-decoration: none; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0; transform: translateY(32px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .nav-links { display: none; }
+  .hero { padding: 120px 24px 60px; }
+  section { padding: 72px 24px; }
+  .about-strip { padding: 32px 24px; }
+  .about-inner { flex-direction: column; gap: 20px; }
+  .hero-stats { gap: 28px; flex-wrap: wrap; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .dor-grid { grid-template-columns: 1fr; }
+  .ice-row { grid-template-columns: 2fr repeat(4, 1fr); }
+  .field-row { grid-template-columns: 1fr; }
+  footer { flex-direction: column; gap: 12px; text-align: center; }
+  .okr-kr { grid-template-columns: 24px 1fr; }
+  #cta { padding: 80px 24px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">PM<span>.</span>Kit</a>
+  <ul class="nav-links">
+    <li><a href="#templates">Templates</a></li>
+    <li><a href="#how">Como usar</a></li>
+    <li><a href="#prompts-section">Prompts IA</a></li>
+  </ul>
+  <a href="#cta" class="nav-cta">Baixar grátis →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-tag">Gratuito · Para PMs iniciantes</div>
+
+  <h1>
+    PM<br>
+    <span class="accent">Starter</span><br>
+    <span class="outline">Kit.</span>
+  </h1>
+
+  <p class="hero-sub">
+    O kit que eu queria ter tido quando comecei em produto.
+    <strong>7 templates prontos</strong> + 10 prompts de IA para o seu dia a dia.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#templates" class="btn-primary">Ver os templates →</a>
+    <a href="#how" class="btn-ghost">Como funciona</a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-num">7</div>
+      <div class="stat-label">Templates</div>
+    </div>
+    <div>
+      <div class="stat-num">10</div>
+      <div class="stat-label">Prompts de IA</div>
+    </div>
+    <div>
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Gratuito</div>
+    </div>
+    <div>
+      <div class="stat-num">∞</div>
+      <div class="stat-label">Usos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT STRIP -->
+<div class="about-strip">
+  <div class="about-inner">
+    <div class="about-avatar">TC</div>
+    <div class="about-text">
+      <div class="about-name">Thais Chehab</div>
+      <div class="about-role">Product Manager · AI Factory @ Distrito</div>
+      <div class="about-bio">PM com foco em IA, automação e produtos SaaS B2B. Já atuei em startups, IoT residencial e hoje construo soluções de IA na AI Factory do Distrito. Este kit reúne os frameworks que uso no dia a dia.</div>
+      <a href="https://linkedin.com/in/thais-chehab" class="about-link" target="_blank">
+        ↗ linkedin.com/in/thais-chehab
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="section-inner">
+    <div class="section-label">Processo</div>
+    <h2 class="section-title">Como usar o kit</h2>
+    <p class="section-desc">Cada template é independente. Use na ordem que fizer sentido para o seu momento.</p>
+
+    <div class="steps-grid">
+      <div class="step reveal">
+        <div class="step-num">01</div>
+        <div class="step-title">Escolha o template</div>
+        <div class="step-desc">Cada card cobre uma etapa do ciclo de produto — do discovery à entrega. Abra o que você precisa agora.</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.1s">
+        <div class="step-num">02</div>
+        <div class="step-title">Preencha os campos</div>
+        <div class="step-desc">Os campos têm dicas de como preencher. Use os exemplos como referência e adapte para o contexto do seu produto.</div>
+      </div>
+      <div class="step reveal" style="transition-delay:0.2s">
+        <div class="step-num">03</div>
+        <div class="step-title">Use a IA para acelerar</div>
+        <div class="step-desc">Cada template tem uma dica de IA com um prompt pronto. Cole no Claude ou ChatGPT e ganhe velocidade.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATES -->
+<section id="templates">
+  <div class="section-inner">
+    <div class="templates-header">
+      <div>
+        <div class="section-label">Templates</div>
+        <h2 class="section-title">7 templates para o seu dia a dia</h2>
+      </div>
+      <p class="section-desc" style="max-width:320px">Clique em qualquer card para abrir e preencher diretamente aqui.</p>
+    </div>
+
+    <div class="template-grid">
+
+      <!-- CARD 1: Discovery -->
+      <div class="template-card reveal">
+        <div class="card-top">
+          <div class="card-num">01</div>
+          <div class="card-icon">🗺️</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Mapa de Discovery</div>
+          <div class="card-desc">Estruture o problema antes de qualquer solução. Valide que você está resolvendo o problema certo.</div>
+          <div class="card-tags">
+            <span class="card-tag">Discovery</span>
+            <span class="card-tag">Problema</span>
+            <span class="card-tag">Hipóteses</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">Produto / Área</div>
+                <input class="field-input" placeholder="Ex: Onboarding do app mobile">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Data</div>
+                <input class="field-input" type="date">
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Qual é o problema?</div>
+              <textarea class="field-input" rows="3" placeholder="Descreva em 1-2 frases, do ponto de vista do usuário."></textarea>
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">Quem sente esse problema?</div>
+                <input class="field-input" placeholder="Segmento ou persona">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Com que frequência?</div>
+                <input class="field-input" placeholder="Ex: a cada login">
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Evidências Quantitativas</div>
+              <textarea class="field-input" rows="2" placeholder="Métricas, analytics, taxas. Ex: 42% de drop no step 2"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Evidências Qualitativas</div>
+              <textarea class="field-input" rows="2" placeholder="Entrevistas, feedbacks, tickets de suporte"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Hipóteses de Solução</div>
+              <textarea class="field-input" rows="3" placeholder="Se fizermos X, acreditamos que Y vai acontecer..."></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Definição de Sucesso</div>
+              <input class="field-input" placeholder="Ex: Aumentar conclusão de onboarding de 58% para 75%">
+            </div>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Descreva o problema para o Claude e peça: <em>"Que perguntas eu deveria fazer para validar se esse é o problema certo a resolver?"</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: Entrevista -->
+      <div class="template-card reveal" style="transition-delay:0.05s">
+        <div class="card-top">
+          <div class="card-num">02</div>
+          <div class="card-icon">🎙️</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Roteiro de Entrevista com Usuário</div>
+          <div class="card-desc">Perguntas organizadas por fase para extrair insights reais sem enviesar o usuário.</div>
+          <div class="card-tags">
+            <span class="card-tag">Research</span>
+            <span class="card-tag">Usuário</span>
+            <span class="card-tag">Discovery</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div class="field-group">
+              <div class="field-label">Objetivo da entrevista</div>
+              <input class="field-input" placeholder="O que você quer aprender? (1 frase)">
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">Perfil do entrevistado</div>
+                <input class="field-input" placeholder="Quem é, contexto, uso do produto">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Hipótese a testar</div>
+                <input class="field-input" placeholder="O que você acredita ser verdade">
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">📋 Abertura (5 min) — campos para anotação</div>
+              <textarea class="field-input" rows="3" placeholder="Me conta sobre sua rotina com o produto. Quando foi a última vez que usou?&#10;&#10;Anotações:"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">🔍 Exploração do problema (15 min)</div>
+              <textarea class="field-input" rows="4" placeholder="Me conta uma situação em que [problema] aconteceu. O que você tentou fazer? Qual foi a parte mais frustrante?&#10;&#10;Anotações:"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">💡 Insights & Citações Importantes</div>
+              <textarea class="field-input" rows="3" placeholder="Anote as palavras exatas do usuário aqui. Quotes valem ouro."></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">🎯 Fechamento — O que aprendeu?</div>
+              <textarea class="field-input" rows="2" placeholder="Principal aprendizado desta entrevista"></textarea>
+            </div>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Cole a transcrição e peça ao Claude: <em>"Identifique os principais problemas mencionados, emoções expressas e oportunidades de produto."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: PRD -->
+      <div class="template-card reveal" style="transition-delay:0.1s">
+        <div class="card-top">
+          <div class="card-num">03</div>
+          <div class="card-icon">📄</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">PRD Simplificado</div>
+          <div class="card-desc">Product Requirements Document enxuto para alinhar time e stakeholders antes de construir.</div>
+          <div class="card-tags">
+            <span class="card-tag">Delivery</span>
+            <span class="card-tag">Stakeholders</span>
+            <span class="card-tag">Alinhamento</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div class="field-group">
+              <div class="field-label">Título da Feature</div>
+              <input class="field-input" placeholder="Ex: Onboarding guiado para novos usuários">
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">PM</div>
+                <input class="field-input" placeholder="Seu nome">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Status</div>
+                <select class="field-input" style="min-height: auto; height: 48px;">
+                  <option value="">Selecionar...</option>
+                  <option>Rascunho</option>
+                  <option>Em revisão</option>
+                  <option>Aprovado</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Problema</div>
+              <textarea class="field-input" rows="2" placeholder="Qual problema estamos resolvendo? (do ponto de vista do usuário)"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Por que agora?</div>
+              <input class="field-input" placeholder="Urgência, oportunidade ou dado que justifica priorização">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Métricas de Sucesso</div>
+              <textarea class="field-input" rows="2" placeholder="Ex: Aumentar conclusão de onboarding de 58% para 75% em 60 dias"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Solução Proposta</div>
+              <textarea class="field-input" rows="3" placeholder="O que vamos construir? (sem detalhe técnico)"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Fora do Escopo</div>
+              <textarea class="field-input" rows="2" placeholder="O que NÃO vamos fazer nessa versão"></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Critérios de Aceite</div>
+              <textarea class="field-input" rows="3" placeholder="Dado que... · Quando... · Então...&#10;Dado que... · Quando... · Então..."></textarea>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Riscos & Dependências</div>
+              <textarea class="field-input" rows="2" placeholder="O que pode dar errado? Quais times ou sistemas dependem desta entrega?"></textarea>
+            </div>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Descreva o problema e a solução e peça ao Claude: <em>"Gere um PRD completo com contexto, métricas, escopo, riscos e critérios de aceite."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: ICE Score -->
+      <div class="template-card reveal" style="transition-delay:0.15s">
+        <div class="card-top">
+          <div class="card-num">04</div>
+          <div class="card-icon">📊</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">Priorização — ICE Score</div>
+          <div class="card-desc">Calcule Impact, Confidence e Ease para priorizar com critério, não com achismo.</div>
+          <div class="card-tags">
+            <span class="card-tag">Priorização</span>
+            <span class="card-tag">Backlog</span>
+            <span class="card-tag">ICE</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div style="margin-bottom:16px; font-size:13px; color:var(--gray3); line-height:1.6;">
+              <strong style="color:var(--orange)">I</strong> = Impacto esperado &nbsp;·&nbsp; <strong style="color:var(--orange)">C</strong> = Confiança na hipótese &nbsp;·&nbsp; <strong style="color:var(--orange)">E</strong> = Facilidade de implementar &nbsp;·&nbsp; Escala de 1–10
+            </div>
+            <div class="ice-header">
+              <div class="ice-header-cell">Iniciativa</div>
+              <div class="ice-header-cell">I</div>
+              <div class="ice-header-cell">C</div>
+              <div class="ice-header-cell">E</div>
+              <div class="ice-header-cell">Score</div>
+            </div>
+            <div id="ice-rows">
+              <div class="ice-row">
+                <input class="field-input" placeholder="Descreva a iniciativa" style="min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <div class="ice-score-display" id="score-0">—</div>
+              </div>
+              <div class="ice-row" style="margin-top:8px">
+                <input class="field-input" placeholder="Descreva a iniciativa" style="min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <div class="ice-score-display" id="score-1">—</div>
+              </div>
+              <div class="ice-row" style="margin-top:8px">
+                <input class="field-input" placeholder="Descreva a iniciativa" style="min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <div class="ice-score-display" id="score-2">—</div>
+              </div>
+              <div class="ice-row" style="margin-top:8px">
+                <input class="field-input" placeholder="Descreva a iniciativa" style="min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <input class="ice-num field-input" type="number" min="1" max="10" placeholder="—" oninput="calcICE(this)" style="text-align:center;min-height:44px">
+                <div class="ice-score-display" id="score-3">—</div>
+              </div>
+            </div>
+            <p class="field-hint" style="margin-top:14px">Score > 7 = Alta prioridade &nbsp;·&nbsp; 5–7 = Média &nbsp;·&nbsp; < 5 = Baixa</p>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Liste suas iniciativas e peça ao Claude: <em>"Me ajude a estimar Impact, Confidence e Ease de cada uma com base neste contexto: [contexto do produto]."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 5: User Story -->
+      <div class="template-card reveal" style="transition-delay:0.2s">
+        <div class="card-top">
+          <div class="card-num">05</div>
+          <div class="card-icon">✍️</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">User Story + DoR / DoD</div>
+          <div class="card-desc">Histórias bem formadas com critérios de aceite e checklists de pronto para entrar e sair do sprint.</div>
+          <div class="card-tags">
+            <span class="card-tag">Delivery</span>
+            <span class="card-tag">Agile</span>
+            <span class="card-tag">Sprint</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:8px;padding:16px;margin-bottom:20px;text-align:center;font-size:14px;color:var(--gray2);">
+              Como <span style="color:var(--orange);font-weight:600">[persona]</span>, quero <span style="color:var(--orange);font-weight:600">[ação]</span>, para que <span style="color:var(--orange);font-weight:600">[benefício]</span>.
+            </div>
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">Como (Persona)</div>
+                <input class="field-input" placeholder="Ex: usuário novo que acabou de se cadastrar">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Quero (Ação)</div>
+                <input class="field-input" placeholder="Ex: ver um guia passo a passo">
+              </div>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Para que (Benefício)</div>
+              <input class="field-input" placeholder="Ex: entender como usar sem precisar de suporte">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Critérios de Aceite</div>
+              <textarea class="field-input" rows="4" placeholder="Dado que... · Quando... · Então...&#10;Dado que... · Quando... · Então...&#10;Dado que... · Quando... · Então..."></textarea>
+            </div>
+            <div class="dor-grid" style="margin-top:20px">
+              <div class="dor-card">
+                <div class="dor-title">Definition of Ready <span class="badge">DoR</span></div>
+                <label class="checklist-item"><input type="checkbox"> Problema claramente definido</label>
+                <label class="checklist-item"><input type="checkbox"> Persona identificada</label>
+                <label class="checklist-item"><input type="checkbox"> Critérios de aceite escritos</label>
+                <label class="checklist-item"><input type="checkbox"> Estimativa feita pelo time</label>
+                <label class="checklist-item"><input type="checkbox"> Dependências mapeadas</label>
+                <label class="checklist-item"><input type="checkbox"> Mockado (se necessário)</label>
+              </div>
+              <div class="dor-card">
+                <div class="dor-title">Definition of Done <span class="badge">DoD</span></div>
+                <label class="checklist-item"><input type="checkbox"> Código revisado e aprovado</label>
+                <label class="checklist-item"><input type="checkbox"> Testes escritos e passando</label>
+                <label class="checklist-item"><input type="checkbox"> Deploy em produção</label>
+                <label class="checklist-item"><input type="checkbox"> Analytics configurado</label>
+                <label class="checklist-item"><input type="checkbox"> Documentação atualizada</label>
+                <label class="checklist-item"><input type="checkbox"> PM validou o fluxo</label>
+              </div>
+            </div>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Cole a descrição da feature e peça ao Claude: <em>"Escreva 3 user stories no formato Como/Quero/Para que e gere critérios de aceite em Dado/Quando/Então."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 6: OKR -->
+      <div class="template-card reveal" style="transition-delay:0.25s">
+        <div class="card-top">
+          <div class="card-num">06</div>
+          <div class="card-icon">🎯</div>
+        </div>
+        <div class="card-body">
+          <div class="card-title">OKR Planner</div>
+          <div class="card-desc">Conecte o trabalho do time a objetivos reais de negócio com Objectives e Key Results.</div>
+          <div class="card-tags">
+            <span class="card-tag">Estratégia</span>
+            <span class="card-tag">OKRs</span>
+            <span class="card-tag">Trimestral</span>
+          </div>
+        </div>
+        <button class="card-expand-btn" onclick="toggleCard(this)">
+          Abrir template <span class="arrow">↓</span>
+        </button>
+        <div class="card-content">
+          <div class="card-content-inner">
+            <div class="field-row">
+              <div class="field-group">
+                <div class="field-label">Período</div>
+                <input class="field-input" placeholder="Ex: Q3 2026 · Jul–Set">
+              </div>
+              <div class="field-group">
+                <div class="field-label">Time / Produto</div>
+                <input class="field-input" placeholder="Ex: Time de Onboarding">
+              </div>
+            </div>
+            <div class="okr-objective">
+              <div class="okr-obj-label">🎯 Objective</div>
+              <textarea class="field-input" rows="2" placeholder="O que o time quer alcançar? Deve ser inspirador e qualitativo. Ex: Tornar o onboarding uma experiência memorável"></textarea>
+            </div>
+            <div class="okr-kr">
+              <div class="kr-num">1</div>
+              <div>
+                <div class="kr-label">Key Result</div>
+                <input class="field-input" placeholder="Como mediremos o sucesso? Ex: Aumentar conclusão de onboarding de 58% para 75%" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Baseline</div>
+                <input class="field-input" placeholder="Hoje: 58%" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Meta</div>
+                <input class="field-input" placeholder="Alvo: 75%" style="min-height:44px">
+              </div>
+            </div>
+            <div class="okr-kr">
+              <div class="kr-num">2</div>
+              <div>
+                <div class="kr-label">Key Result</div>
+                <input class="field-input" placeholder="Segundo Key Result mensurável" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Baseline</div>
+                <input class="field-input" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Meta</div>
+                <input class="field-input" style="min-height:44px">
+              </div>
+            </div>
+            <div class="okr-kr">
+              <div class="kr-num">3</div>
+              <div>
+                <div class="kr-label">Key Result</div>
+                <input class="field-input" placeholder="Terceiro Key Result mensurável" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Baseline</div>
+                <input class="field-input" style="min-height:44px">
+              </div>
+              <div>
+                <div class="kr-label">Meta</div>
+                <input class="field-input" style="min-height:44px">
+              </div>
+            </div>
+            <div class="ai-tip">
+              <div class="ai-tip-icon">✦</div>
+              <div class="ai-tip-text"><strong>Dica de IA:</strong> Descreva o contexto do produto e peça ao Claude: <em>"Sugira 1 Objective e 3 Key Results para o próximo trimestre."</em></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- PROMPTS -->
+<section id="prompts-section" style="background:var(--bg2);border-top:1px solid var(--border)">
+  <div class="section-inner">
+    <div class="section-label">Bônus</div>
+    <h2 class="section-title">10 Prompts de IA para PMs</h2>
+    <p class="section-desc" style="margin-bottom:48px">Copie, substitua os campos entre colchetes e use no Claude ou ChatGPT.</p>
+
+    <div id="prompts-list">
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="cta-glow"></div>
+  <div class="section-inner" style="position:relative;z-index:2">
+    <div class="section-label" style="justify-content:center">Comece agora</div>
+    <h2 class="section-title">Pronto para usar o kit?</h2>
+    <p class="section-desc">Todos os templates estão aqui, gratuitos, prontos para preencher. Nenhum cadastro necessário para usar.</p>
+    <div class="hero-actions" style="justify-content:center">
+      <a href="#templates" class="btn-primary">Ir para os templates →</a>
+      <a href="https://linkedin.com/in/thais-chehab" class="btn-ghost" target="_blank">Me seguir no LinkedIn</a>
+    </div>
+    <div class="cta-handle">Criado por <a href="https://linkedin.com/in/thais-chehab" target="_blank">@thaischehab</a> · PM na AI Factory @ Distrito</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>PM Starter Kit · por <a href="https://linkedin.com/in/thais-chehab" target="_blank">Thais Chehab</a></span>
+  <span>Gratuito, sempre. Compartilhe com quem precisa. 🧡</span>
+</footer>
+
+<script>
+// ── CURSOR ──────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx+'px'; cursor.style.top = my+'px'; });
+function animRing() {
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx+'px'; ring.style.top = ry+'px';
+  requestAnimationFrame(animRing);
+}
+animRing();
+document.querySelectorAll('a,button,input,textarea,select').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; });
+  el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; });
+});
+
+// ── CARD TOGGLE ──────────────────────────────────────────
+function toggleCard(btn) {
+  const content = btn.nextElementSibling;
+  const isOpen = content.classList.contains('open');
+  content.classList.toggle('open', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+  btn.querySelector('.arrow').textContent = isOpen ? '↓' : '↑';
+}
+
+// ── ICE SCORE ────────────────────────────────────────────
+function calcICE(input) {
+  const row = input.closest('.ice-row');
+  const nums = row.querySelectorAll('input[type="number"]');
+  const scoreEl = row.querySelector('.ice-score-display');
+  if (!scoreEl) return;
+  const vals = [...nums].map(n => parseFloat(n.value) || 0);
+  if (vals.every(v => v > 0)) {
+    const score = ((vals[0] + vals[1] + vals[2]) / 3).toFixed(1);
+    scoreEl.textContent = score;
+    const s = parseFloat(score);
+    scoreEl.style.background = s >= 7 ? 'linear-gradient(135deg,#FF6600,#ff9900)' : s >= 5 ? 'linear-gradient(135deg,#cc8800,#ffaa00)' : 'linear-gradient(135deg,#444,#555)';
+  } else { scoreEl.textContent = '—'; }
+}
+
+// ── SCROLL REVEAL ────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── COPY PROMPT ──────────────────────────────────────────
+function copyPrompt(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '⎘ Copiar prompt'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── RENDER PROMPTS ───────────────────────────────────────
+const prompts = [
+  { n:"01", title:"Sintetizar Entrevista com Usuário",
+    prompt:"Aqui está a transcrição de uma entrevista com usuário: [cole aqui]. Identifique: (1) principais problemas mencionados, (2) emoções expressas, (3) comportamentos observados, (4) oportunidades de produto.",
+    result:"Síntese estruturada com temas, quotes relevantes e oportunidades ranqueadas por frequência." },
+  { n:"02", title:"Gerar User Stories",
+    prompt:"Com base nessa feature: [descrição], escreva 3 user stories no formato 'Como [persona], quero [ação], para que [benefício]'. Para cada uma, inclua 3 critérios de aceite no formato Dado/Quando/Então.",
+    result:"3 user stories completas com critérios de aceite prontos para o backlog." },
+  { n:"03", title:"Criar PRD Completo",
+    prompt:"Crie um PRD para a seguinte feature: [descrição]. Inclua: contexto, problema, solução proposta, métricas de sucesso, escopo (dentro e fora), riscos e dependências.",
+    result:"PRD estruturado e completo, pronto para revisão do time." },
+  { n:"04", title:"Priorizar Backlog com ICE",
+    prompt:"Aqui estão as iniciativas do meu backlog: [liste]. Para cada uma, estime Impact (1-10), Confidence (1-10) e Ease (1-10) com base neste contexto: [contexto]. Calcule o ICE Score e sugira a ordem de priorização.",
+    result:"Tabela com ICE Score calculado e justificativa para cada item." },
+  { n:"05", title:"Refinar OKRs",
+    prompt:"Meu time tem o seguinte objetivo: [objetivo]. Sugira 3 Key Results mensuráveis e realistas, com baseline e meta sugerida, baseados neste contexto: [contexto do produto e dados atuais].",
+    result:"3 KRs bem formulados, mensuráveis e alinhados ao objetivo." },
+  { n:"06", title:"Preparar Sessão de Discovery",
+    prompt:"Vou fazer uma sessão de discovery sobre [tema/problema]. Crie um roteiro de 45 minutos com: objetivos da sessão, atividades (ex: crazy 8, how might we), perguntas de abertura e fechamento.",
+    result:"Roteiro completo de discovery pronto para facilitar." },
+  { n:"07", title:"Analisar Feedbacks de Clientes",
+    prompt:"Aqui estão feedbacks de clientes: [cole aqui]. Categorize por tema, identifique os 3 problemas mais frequentes e sugira 2 iniciativas de produto que endereçariam a maioria deles.",
+    result:"Análise categorizada com iniciativas priorizadas por impacto." },
+  { n:"08", title:"Escrever Release Notes",
+    prompt:"A seguinte feature foi lançada: [descrição técnica]. Escreva release notes para: (1) usuários finais (foco no benefício) e (2) time interno (foco em o que mudou e como testar).",
+    result:"Duas versões de release notes com o tom certo para cada público." },
+  { n:"09", title:"Criar Apresentação para Stakeholders",
+    prompt:"Preciso apresentar este resultado para liderança: [contexto]. Crie uma estrutura de apresentação com: problema, dados, solução, resultado esperado e próximos passos. Tom executivo.",
+    result:"Estrutura de apresentação com os pontos-chave de cada slide." },
+  { n:"10", title:"Revisar User Story",
+    prompt:"Revise essa user story: [cole a story]. Verifique se está bem formada, se os critérios de aceite são testáveis e se há ambiguidades. Sugira melhorias.",
+    result:"Feedback estruturado com versão melhorada da story." },
+];
+
+const container = document.getElementById('prompts-list');
+prompts.forEach(p => {
+  container.innerHTML += `
+  <div class="prompt-card reveal">
+    <div class="prompt-header">
+      <div class="prompt-num">${p.n}</div>
+      <div class="prompt-title">${p.title}</div>
+    </div>
+    <div class="prompt-body">
+      <div class="prompt-label">Prompt</div>
+      <div class="prompt-text">${p.prompt}</div>
+      <div class="prompt-result-label">Resultado esperado</div>
+      <div class="prompt-result">${p.result}</div>
+      <button class="copy-btn" onclick="copyPrompt(this, \`${p.prompt}\`)">⎘ Copiar prompt</button>
+    </div>
+  </div>`;
+});
+
+// Re-observe newly added elements
+document.querySelectorAll('.reveal:not(.observed)').forEach(el => {
+  el.classList.add('observed');
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
