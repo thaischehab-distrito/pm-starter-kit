@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Módulo 03 — Priorização · PM Starter Kit PRO</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #FF6600;
+    --orange-dim: rgba(255,102,0,0.1);
+    --orange-border: rgba(255,102,0,0.25);
+    --bg: #050505;
+    --bg2: #0c0c0c;
+    --bg3: #141414;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.04);
+    --text: #f0f0f0;
+    --text2: #aaa;
+    --text3: #555;
+    --green: #4caf7d;
+    --green-bg: rgba(76,175,125,0.08);
+    --red: #e05555;
+    --red-bg: rgba(224,85,85,0.08);
+    --blue: #5b9cf6;
+    --blue-bg: rgba(91,156,246,0.08);
+    --yellow: #f0c060;
+    --yellow-bg: rgba(240,192,96,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; line-height: 1.7; }
+  
+  /* LAYOUT */
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--bg2); border-right: 1px solid var(--border); padding: 28px 0; overflow-y: auto; z-index: 10; }
+  .main { margin-left: 240px; padding: 48px 56px 100px; max-width: 900px; }
+  
+  /* SIDEBAR */
+  .sidebar-logo { padding: 0 20px 24px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+  .sidebar-logo-tag { font-size: 10px; font-weight: 600; color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+  .sidebar-logo-title { font-size: 13px; font-weight: 700; color: var(--text); }
+  .sidebar-module { padding: 0 12px; margin-bottom: 4px; }
+  .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 8px; cursor: pointer; transition: all 0.15s; font-size: 12px; color: var(--text3); }
+  .sidebar-item:hover { background: var(--bg3); color: var(--text2); }
+  .sidebar-item.active { background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
+  .sidebar-item .num { font-size: 10px; font-weight: 700; width: 18px; flex-shrink: 0; }
+  .sidebar-section { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); padding: 16px 22px 6px; }
+  .sidebar-progress { padding: 20px; margin-top: auto; border-top: 1px solid var(--border); }
+  .progress-label { font-size: 11px; color: var(--text3); margin-bottom: 8px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--orange); border-radius: 2px; width: 0%; transition: width 0.5s ease; }
+
+  /* TYPOGRAPHY */
+  h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 16px; }
+  h1 em { font-style: normal; color: var(--orange); }
+  h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; margin: 56px 0 16px; padding-top: 56px; border-top: 1px solid var(--border2); }
+  h2:first-of-type { border-top: none; padding-top: 0; margin-top: 40px; }
+  h3 { font-size: 16px; font-weight: 600; margin: 28px 0 10px; color: var(--text); }
+  p { font-size: 14px; color: var(--text2); margin-bottom: 16px; line-height: 1.8; }
+  strong { color: var(--text); font-weight: 600; }
+
+  /* COMPONENTS */
+  .module-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--orange); border: 1px solid var(--orange-border); background: var(--orange-dim); padding: 5px 14px; border-radius: 20px; margin-bottom: 24px; }
+  .intro-box { background: var(--bg2); border: 1px solid var(--border); border-left: 3px solid var(--orange); border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: 40px; }
+  .intro-box p { margin: 0; font-size: 15px; color: var(--text2); line-height: 1.75; }
+  .intro-box strong { color: var(--orange); }
+
+  .callout { border-radius: 10px; padding: 16px 20px; margin: 24px 0; font-size: 13px; line-height: 1.7; }
+  .callout-orange { background: var(--orange-dim); border: 1px solid var(--orange-border); color: var(--text2); }
+  .callout-green { background: var(--green-bg); border: 1px solid rgba(76,175,125,0.2); color: var(--text2); }
+  .callout-red { background: var(--red-bg); border: 1px solid rgba(224,85,85,0.2); color: var(--text2); }
+  .callout-blue { background: var(--blue-bg); border: 1px solid rgba(91,156,246,0.2); color: var(--text2); }
+  .callout-yellow { background: var(--yellow-bg); border: 1px solid rgba(240,192,96,0.2); color: var(--text2); }
+  .callout-icon { font-size: 16px; margin-bottom: 6px; display: block; }
+  .callout strong { color: var(--text); }
+
+  /* TABLES */
+  .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: 12px; border: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead { background: var(--bg3); }
+  th { padding: 12px 16px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); border-bottom: 1px solid var(--border); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border2); color: var(--text2); vertical-align: top; line-height: 1.6; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.01); }
+  .tag-green { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: var(--green-bg); color: var(--green); border: 1px solid rgba(76,175,125,0.2); }
+  .tag-red { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: var(--red-bg); color: var(--red); border: 1px solid rgba(224,85,85,0.2); }
+  .tag-yellow { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(240,192,96,0.2); }
+  .tag-blue { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px; background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(91,156,246,0.2); }
+
+  /* TEMPLATE BLOCK */
+  .template { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; margin: 28px 0; overflow: hidden; }
+  .template-header { background: var(--bg3); padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
+  .template-title { font-size: 12px; font-weight: 600; color: var(--text); }
+  .template-badge { font-size: 10px; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--orange-dim); color: var(--orange); border: 1px solid var(--orange-border); }
+  .template-body { padding: 20px; }
+  .template-field { margin-bottom: 18px; }
+  .template-field:last-child { margin-bottom: 0; }
+  .field-label { font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .field-value { font-size: 13px; color: var(--text2); line-height: 1.7; background: var(--bg3); padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border2); }
+  .field-value.mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .field-note { font-size: 11px; color: var(--text3); margin-top: 5px; font-style: italic; }
+
+  /* SCORING TABLE */
+  .score-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .score-table th { background: var(--bg3); padding: 10px 14px; text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); border: 1px solid var(--border); letter-spacing: 0.05em; text-transform: uppercase; }
+  .score-table th:first-child { text-align: left; }
+  .score-table td { padding: 10px 14px; border: 1px solid var(--border2); color: var(--text2); text-align: center; }
+  .score-table td:first-child { text-align: left; font-weight: 500; color: var(--text); }
+  .score-table tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
+  .score-high { color: var(--green); font-weight: 700; }
+  .score-med { color: var(--yellow); font-weight: 600; }
+  .score-low { color: var(--red); font-weight: 600; }
+  .score-total { background: var(--orange-dim) !important; color: var(--orange) !important; font-weight: 700; border-color: var(--orange-border) !important; }
+
+  /* PROMPT BLOCK */
+  .prompt-block { background: #0a0f0a; border: 1px solid rgba(76,175,125,0.2); border-radius: 12px; margin: 20px 0; overflow: hidden; }
+  .prompt-header { background: rgba(76,175,125,0.08); padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid rgba(76,175,125,0.15); }
+  .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); }
+  .prompt-body { padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #9ec; line-height: 1.7; white-space: pre-wrap; }
+  .prompt-var { color: var(--orange); }
+
+  /* DECISION TREE */
+  .decision { display: grid; gap: 10px; margin: 20px 0; }
+  .decision-node { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .decision-q { font-size: 12px; font-weight: 700; color: var(--orange); flex-shrink: 0; padding-top: 1px; }
+  .decision-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .decision-text strong { color: var(--text); }
+
+  /* SCRIPT BLOCK */
+  .script { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px; margin: 20px 0; }
+  .script-role { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .script-role.pm { color: var(--blue); }
+  .script-role.stakeholder { color: var(--yellow); }
+  .script-line { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 16px; padding-left: 14px; border-left: 2px solid var(--border); }
+  .script-line.pm-line { border-color: var(--blue); }
+  .script-line.sh-line { border-color: var(--yellow); }
+  .script-note { font-size: 11px; color: var(--text3); font-style: italic; margin-top: -8px; margin-bottom: 16px; padding-left: 14px; }
+
+  /* NAV */
+  .bottom-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 80px; padding-top: 32px; border-top: 1px solid var(--border); }
+  .nav-btn { font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 8px; background: var(--bg2); border: 1px solid var(--border); padding: 10px 18px; border-radius: 8px; transition: all 0.2s; font-family: 'Poppins', sans-serif; }
+  .nav-btn:hover { border-color: var(--orange-border); color: var(--orange); }
+
+  /* SECTION DIVIDER */
+  .section-num { font-size: 11px; font-weight: 700; color: var(--orange); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; padding: 32px 20px 80px; }
+    h1 { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-tag">Kit PRO · Módulo 03</div>
+    <div class="sidebar-logo-title">Priorização</div>
+  </div>
+  <div class="sidebar-section">Neste módulo</div>
+  <div class="sidebar-module">
+    <div class="sidebar-item active" onclick="scrollTo('intro')"><span class="num">01</span> Por onde começar</div>
+    <div class="sidebar-item" onclick="scrollTo('frameworks')"><span class="num">02</span> RICE, ICE e MoSCoW</div>
+    <div class="sidebar-item" onclick="scrollTo('quando-falham')"><span class="num">03</span> Quando falham</div>
+    <div class="sidebar-item" onclick="scrollTo('planilha')"><span class="num">04</span> Planilha de priorização</div>
+    <div class="sidebar-item" onclick="scrollTo('roadmap')"><span class="num">05</span> Template de roadmap</div>
+    <div class="sidebar-item" onclick="scrollTo('nao')"><span class="num">06</span> Como dizer não</div>
+    <div class="sidebar-item" onclick="scrollTo('prompts')"><span class="num">07</span> Prompts de IA</div>
+  </div>
+  <div style="padding: 20px; margin-top: 20px; border-top: 1px solid var(--border)">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;display:flex;justify-content:space-between"><span>Progresso</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- HEADER -->
+  <div id="intro">
+    <div class="module-tag">★ Módulo 03 · Kit PRO</div>
+    <h1>Priorização<br><em>a arte de dizer não</em> com dados</h1>
+
+    <div class="intro-box">
+      <p>Todo PM sabe que precisa priorizar. Poucos sabem fazer isso sem criar inimigos, sem travar em análise paralela e sem tomar decisões que parecem ótimas no papel mas explodem em produção. <strong>Este módulo é sobre julgamento, não sobre fórmulas.</strong> Os frameworks são ferramentas — você é o artesão.</p>
+    </div>
+
+    <div class="callout callout-orange">
+      <span class="callout-icon">⚠️</span>
+      <strong>O erro mais comum de PMs iniciantes:</strong> usar o framework como muleta para fugir da responsabilidade da decisão. "O RICE disse que essa feature tem prioridade maior" não é uma decisão — é uma delegação. O framework organiza a conversa. A decisão é sua.
+    </div>
+  </div>
+
+  <!-- SECTION 1: FRAMEWORKS -->
+  <div id="frameworks">
+    <div class="section-num">01 — Frameworks</div>
+    <h2>RICE, ICE e MoSCoW: quando usar cada um</h2>
+
+    <p>Cada framework foi criado para resolver um problema específico em um contexto específico. Usar o errado no contexto errado gera mais ruído do que clareza.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Framework</th>
+            <th>Use quando</th>
+            <th>Evite quando</th>
+            <th>Pontos cegos</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>RICE</strong><br><span style="font-size:11px;color:var(--text3)">Reach × Impact × Confidence ÷ Effort</span></td>
+            <td>Você tem muitos itens no backlog e precisa de uma visão comparativa rápida. Time já tem dados de uso e estimativas de esforço confiáveis.</td>
+            <td>Produto novo sem dados históricos. Itens muito diferentes entre si — comparar uma nova feature com uma refatoração técnica distorce o resultado.</td>
+            <td>O "Reach" tende a favorecer features de topo de funil. Itens de retenção e redução de churn costumam ser subavaliados mesmo sendo críticos.</td>
+          </tr>
+          <tr>
+            <td><strong>ICE</strong><br><span style="font-size:11px;color:var(--text3)">Impact × Confidence × Ease</span></td>
+            <td>Times pequenos, ciclos rápidos, backlog de hipóteses de crescimento. Bom para priorizar experimentos onde velocidade importa mais que precisão.</td>
+            <td>Decisões de produto de alto impacto estratégico. O "Ease" incentiva pegar o caminho mais fácil — perigoso quando o problema difícil é o que importa.</td>
+            <td>Viés para o que o time sabe fazer bem. Features que exigem habilidades novas ou parcerias externas são sistematicamente sub-priorizadas.</td>
+          </tr>
+          <tr>
+            <td><strong>MoSCoW</strong><br><span style="font-size:11px;color:var(--text3)">Must / Should / Could / Won't</span></td>
+            <td>Alinhamento de escopo com stakeholders. Lançamentos com data fixa onde precisa definir o que entra ou não no MVP.</td>
+            <td>Priorização contínua de backlog. O MoSCoW é uma fotografia do momento — não um sistema de gestão ongoing.</td>
+            <td>Todo mundo quer que tudo seja "Must". Sem facilitação forte, 80% do backlog acaba na mesma categoria e o exercício perde o valor.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- RICE TEMPLATE -->
+    <h3>Template RICE preenchido — SaaS B2B</h3>
+    <p>Contexto: time de 6 pessoas, produto de gestão de contratos, 3 itens disputando a próxima sprint.</p>
+
+    <div class="table-wrap">
+      <table class="score-table">
+        <thead>
+          <tr>
+            <th style="text-align:left">Item</th>
+            <th>Reach<br><span style="font-weight:400;font-size:10px">(usuários/mês)</span></th>
+            <th>Impact<br><span style="font-weight:400;font-size:10px">(0.25–3)</span></th>
+            <th>Confidence<br><span style="font-weight:400;font-size:10px">(%)</span></th>
+            <th>Effort<br><span style="font-weight:400;font-size:10px">(semanas)</span></th>
+            <th>Score<br><span style="font-weight:400;font-size:10px">R×I×C÷E</span></th>
+            <th>Decisão</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Assinatura digital de contratos</td>
+            <td>420</td>
+            <td class="score-high">3.0</td>
+            <td>80%</td>
+            <td>3</td>
+            <td class="score-high">336</td>
+            <td><span class="tag-green">Prioridade alta</span></td>
+          </tr>
+          <tr>
+            <td>Filtro avançado por tags</td>
+            <td>380</td>
+            <td class="score-med">1.0</td>
+            <td>90%</td>
+            <td>1</td>
+            <td class="score-med">342</td>
+            <td><span class="tag-yellow">Revisar</span></td>
+          </tr>
+          <tr>
+            <td>Integração com ERP legado</td>
+            <td>60</td>
+            <td class="score-high">3.0</td>
+            <td>50%</td>
+            <td>6</td>
+            <td class="score-low">15</td>
+            <td><span class="tag-red">Adiar</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-yellow">
+      <strong>Nota do PM:</strong> O filtro de tags tem score parecido com a assinatura digital, mas por motivos completamente diferentes — alto reach, esforço baixo, impacto médio. Antes de priorizá-lo, pergunte: esse filtro resolve um problema real ou é uma feature de conveniência que os usuários pediram mas raramente usariam? O score não responde isso. Você precisa voltar ao discovery.
+    </div>
+
+    <!-- MOSCOW TEMPLATE -->
+    <h3>Template MoSCoW preenchido — MVP de produto de IA</h3>
+    <p>Contexto: produto de agente de IA para triagem de leads em startup. Prazo de 6 semanas para lançamento beta.</p>
+
+    <div class="template">
+      <div class="template-header">
+        <div class="template-title">MoSCoW — Escopo do Beta · Agente de Triagem de Leads</div>
+        <div class="template-badge">Template preenchido</div>
+      </div>
+      <div class="template-body">
+        <div class="template-field">
+          <div class="field-label">🔴 Must have — sem isso não lançamos</div>
+          <div class="field-value">
+            → Agente recebe lead via formulário e classifica em Quente / Morno / Frio com base em critérios definidos pelo time comercial<br>
+            → Notificação automática para o vendedor responsável quando lead é classificado como Quente<br>
+            → Dashboard básico com volume de leads por classificação e taxa de conversão<br>
+            → Capacidade de o vendedor sobrescrever a classificação do agente (feedback loop)
+          </div>
+          <div class="field-note">Critério: funcionalidade que, se ausente, torna o produto inútil para o caso de uso central.</div>
+        </div>
+        <div class="template-field">
+          <div class="field-label">🟡 Should have — importante mas não bloqueia o lançamento</div>
+          <div class="field-value">
+            → Histórico de interações do lead consolidado em uma única tela<br>
+            → Integração com CRM existente (HubSpot) — via export CSV no beta<br>
+            → Explicação do raciocínio do agente para cada classificação ("por que Quente?")
+          </div>
+          <div class="field-note">Critério: ausência reduz a qualidade da experiência mas os usuários conseguem trabalhar sem.</div>
+        </div>
+        <div class="template-field">
+          <div class="field-label">🟢 Could have — bom ter se sobrar tempo</div>
+          <div class="field-value">
+            → Personalização dos critérios de classificação pelo próprio usuário<br>
+            → Relatório semanal automático por email<br>
+            → Integração nativa com HubSpot (API)
+          </div>
+        </div>
+        <div class="template-field">
+          <div class="field-label">⚫ Won't have — fora do escopo do beta, documentado para não virar surpresa</div>
+          <div class="field-value">
+            → App mobile<br>
+            → Multi-idiomas<br>
+            → Agente que responde automaticamente o lead sem aprovação humana
+          </div>
+          <div class="field-note">Documente o Won't have explicitamente. Ele evita que stakeholders assumam que algo está incluído.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: QUANDO FALHAM -->
+  <div id="quando-falham">
+    <div class="section-num">02 — Quando os frameworks mentem</div>
+    <h2>Os 4 cenários onde nenhum framework funciona</h2>
+
+    <p>Depois de anos priorizando backlog em diferentes contextos, identifiquei quatro situações onde depender do framework sozinho te leva para o lugar errado.</p>
+
+    <div class="decision">
+      <div class="decision-node">
+        <div class="decision-q">01</div>
+        <div class="decision-text"><strong>Dívida técnica acumulada.</strong> Frameworks de priorização medem valor entregue ao usuário. Dívida técnica não aparece no RICE porque não tem "Reach" ou "Impact" direto. O resultado: a dívida cresce até o dia que o sistema quebra em produção e você explica para o CEO por que o produto ficou fora do ar. Regra prática: reserve 20% da capacidade do time para saúde técnica, fora da priorização de produto.</div>
+      </div>
+      <div class="decision-node">
+        <div class="decision-q">02</div>
+        <div class="decision-text"><strong>Obrigações regulatórias e de segurança.</strong> LGPD, conformidade fiscal, auditoria. Essas demandas não negociam com score. Criar uma linha separada no roadmap chamada "Non-negotiable" para esse tipo de item evita que eles contaminem a priorização de produto e criem confusão no time.</div>
+      </div>
+      <div class="decision-node">
+        <div class="decision-q">03</div>
+        <div class="decision-text"><strong>Apostas estratégicas de longo prazo.</strong> Às vezes você precisa construir algo que nenhum usuário pediu porque você enxerga uma oportunidade de mercado. O RICE vai dar score baixo para isso — baixo Reach, baixa Confidence. Um bom PM sabe quando ignorar o framework e defender a aposta com visão, não com números.</div>
+      </div>
+      <div class="decision-node">
+        <div class="decision-q">04</div>
+        <div class="decision-text"><strong>Retenção e redução de churn.</strong> Usuários que saem silenciosamente não aparecem em pesquisas. Features de retenção raramente têm Reach alto porque o problema está em quem você está perdendo, não em quem você tem. Complemente o framework com análise de cohort e entrevistas com usuários churned.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: PLANILHA -->
+  <div id="planilha">
+    <div class="section-num">03 — Template de priorização</div>
+    <h2>A planilha que uso no dia a dia</h2>
+
+    <p>Este modelo combina RICE com duas dimensões que os frameworks tradicionais ignoram: alinhamento estratégico e risco técnico. O resultado é uma visão mais honesta de onde investir o tempo do time.</p>
+
+    <div class="template">
+      <div class="template-header">
+        <div class="template-title">Planilha de Priorização Expandida · Q3 2025</div>
+        <div class="template-badge">Template preenchido</div>
+      </div>
+      <div class="template-body">
+        <div class="table-wrap" style="margin:0">
+          <table class="score-table">
+            <thead>
+              <tr>
+                <th style="text-align:left">Item</th>
+                <th>Impacto<br>usuário<br><span style="font-weight:400">/10</span></th>
+                <th>Alinha-<br>mento<br>estratégico<br><span style="font-weight:400">/10</span></th>
+                <th>Esforço<br>técnico<br><span style="font-weight:400">/10 (inv.)</span></th>
+                <th>Risco<br>técnico<br><span style="font-weight:400">/10 (inv.)</span></th>
+                <th>Confiança<br><span style="font-weight:400">/10</span></th>
+                <th>Score<br><span style="font-weight:400">média pond.</span></th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Painel de analytics do cliente</td>
+                <td class="score-high">9</td>
+                <td class="score-high">9</td>
+                <td class="score-med">6</td>
+                <td class="score-med">7</td>
+                <td class="score-high">8</td>
+                <td class="score-high">7.8</td>
+                <td><span class="tag-green">Sprint atual</span></td>
+              </tr>
+              <tr>
+                <td>Exportação de relatórios em PDF</td>
+                <td class="score-med">7</td>
+                <td class="score-med">5</td>
+                <td class="score-high">9</td>
+                <td class="score-high">9</td>
+                <td class="score-high">9</td>
+                <td class="score-high">7.8</td>
+                <td><span class="tag-green">Sprint atual</span></td>
+              </tr>
+              <tr>
+                <td>Modo offline no mobile</td>
+                <td class="score-med">6</td>
+                <td class="score-med">4</td>
+                <td class="score-low">3</td>
+                <td class="score-low">3</td>
+                <td class="score-med">6</td>
+                <td class="score-low">4.4</td>
+                <td><span class="tag-red">Backlog</span></td>
+              </tr>
+              <tr>
+                <td>SSO para enterprise</td>
+                <td class="score-med">5</td>
+                <td class="score-high">9</td>
+                <td class="score-med">5</td>
+                <td class="score-med">6</td>
+                <td class="score-med">7</td>
+                <td class="score-med">6.4</td>
+                <td><span class="tag-yellow">Próxima sprint</span></td>
+              </tr>
+              <tr>
+                <td>Refatoração do módulo de auth</td>
+                <td class="score-low">2</td>
+                <td class="score-med">6</td>
+                <td class="score-med">5</td>
+                <td class="score-high">8</td>
+                <td class="score-high">9</td>
+                <td class="score-med">6.0</td>
+                <td><span class="tag-blue">Tech debt lane</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="margin-top:16px">
+          <div class="field-label">Como calcular o score</div>
+          <div class="field-value mono">Score = (Impacto × 0.30) + (Alinhamento × 0.25) + (Esforço × 0.20) + (Risco × 0.15) + (Confiança × 0.10)</div>
+          <div class="field-note">Esforço e Risco são invertidos: 10 = muito fácil / sem risco. Ajuste os pesos conforme o momento da empresa — em crescimento, aumente o peso de Alinhamento estratégico.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: ROADMAP -->
+  <div id="roadmap">
+    <div class="section-num">04 — Roadmap</div>
+    <h2>Template de roadmap por OKR</h2>
+
+    <p>Um roadmap que a liderança aprova e o time consegue executar tem três características: está ancorado em objetivos de negócio, comunica intenção sem prometer datas que você não controla, e é revisado com frequência — não uma vez por trimestre.</p>
+
+    <div class="callout callout-blue">
+      <strong>A armadilha do roadmap como compromisso:</strong> quando o roadmap vira uma lista de promessas, o time para de questionar prioridades e começa a executar no piloto automático. Roadmap é uma hipótese sobre o futuro, não um contrato. Comunique isso explicitamente para stakeholders desde o início.
+    </div>
+
+    <div class="template">
+      <div class="template-header">
+        <div class="template-title">Roadmap por OKR · Q3 2025 · Produto de IA para Gestão de Contratos</div>
+        <div class="template-badge">Template preenchido</div>
+      </div>
+      <div class="template-body">
+
+        <div class="template-field">
+          <div class="field-label">Objetivo do trimestre</div>
+          <div class="field-value">Aumentar a retenção de clientes SMB de 72% para 82% em 90 dias, reduzindo o tempo médio para o primeiro valor (TTV) de 14 para 7 dias.</div>
+        </div>
+
+        <div class="template-field">
+          <div class="field-label">KR1 · Mês 1 — Reduzir fricção no onboarding</div>
+          <div class="field-value">
+            → <strong>Assistente de configuração guiado por IA</strong> — agente que acompanha o usuário nas primeiras 3 ações críticas do produto<br>
+            → <span class="tag-green">Meta:</span> 60% dos novos usuários completam a configuração inicial em menos de 30 min (hoje: 35%)<br>
+            → <span class="tag-blue">Dependência:</span> Time de engenharia (3 devs, 2 semanas) + aprovação de design
+          </div>
+        </div>
+
+        <div class="template-field">
+          <div class="field-label">KR2 · Mês 2 — Aumentar engajamento na segunda semana</div>
+          <div class="field-value">
+            → <strong>Painel de analytics do cliente</strong> — visão consolidada de contratos, alertas de vencimento e ações pendentes<br>
+            → <strong>Notificações inteligentes</strong> — agente que detecta contratos próximos do vencimento e notifica proativamente<br>
+            → <span class="tag-green">Meta:</span> DAU/MAU de 0.18 para 0.28 entre usuários com mais de 14 dias de conta<br>
+            → <span class="tag-yellow">Risco:</span> Definição de "ação relevante" para o agente requer validação qualitativa antes de construir
+          </div>
+        </div>
+
+        <div class="template-field">
+          <div class="field-label">KR3 · Mês 3 — Fechar gaps de retenção em enterprise</div>
+          <div class="field-value">
+            → <strong>SSO e permissões por papel</strong> — bloqueador para 4 clientes enterprise identificados no churn<br>
+            → <strong>Exportação de relatórios</strong> — solicitação recorrente nas entrevistas de churn<br>
+            → <span class="tag-green">Meta:</span> Reativar 2 dos 4 clientes enterprise que cancelaram citando "falta de funcionalidades de segurança"
+          </div>
+        </div>
+
+        <div class="template-field">
+          <div class="field-label">Fora do escopo do trimestre (Won't do Q3)</div>
+          <div class="field-value">
+            → App mobile nativo — depende de validação de mercado ainda não concluída<br>
+            → Integração com ERP — esforço desproporcional para o número de clientes que solicitaram<br>
+            → Módulo financeiro — próxima aposta estratégica, entra no planejamento do Q4
+          </div>
+          <div class="field-note">Documentar o "fora do escopo" é tão importante quanto documentar o que está dentro. Evita conversas repetidas com stakeholders e alinha expectativas antes do trimestre começar.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: DIZER NÃO -->
+  <div id="nao">
+    <div class="section-num">05 — Dizer não</div>
+    <h2>Como dizer não sem criar inimigo</h2>
+
+    <p>Dizer não para um stakeholder é uma das habilidades mais subestimadas em produto. A maioria dos PMs ou evita o conflito (e promete coisas que não vai entregar) ou é direto demais (e cria resistência desnecessária). Existe um caminho do meio.</p>
+
+    <div class="callout callout-green">
+      <strong>O princípio fundamental:</strong> você não está dizendo não para a pessoa. Está dizendo não para o item, agora, neste contexto. Essa distinção muda completamente o tom da conversa.
+    </div>
+
+    <h3>O script que funciona em 90% das situações</h3>
+
+    <div class="script">
+      <div style="font-size:12px;color:var(--text3);margin-bottom:16px;font-style:italic">Cenário: Head de Vendas pede para priorizar uma integração com um CRM específico de um cliente enterprise.</div>
+
+      <div class="script-role stakeholder">Stakeholder</div>
+      <div class="script-line sh-line">"Precisamos colocar a integração com o Salesforce na próxima sprint. O cliente X está ameaçando cancelar se não tivermos isso até o fim do mês."</div>
+
+      <div class="script-role pm">PM — Passo 1: Valide a urgência sem comprometer</div>
+      <div class="script-line pm-line">"Entendo, e o cliente X é importante para nós. Deixa eu entender melhor a situação antes de falar sobre timing — o cancelamento é por falta da integração especificamente, ou tem outros fatores? Quero ter certeza que estamos resolvendo o problema certo."</div>
+      <div class="script-note">Por quê: abre espaço para entender se a integração é realmente o bloqueador ou se há outra solução mais rápida.</div>
+
+      <div class="script-role stakeholder">Stakeholder</div>
+      <div class="script-line sh-line">"É principalmente a integração. Eles exportam dados manualmente hoje e está consumindo muito tempo da equipe deles."</div>
+
+      <div class="script-role pm">PM — Passo 2: Mostre o contexto de priorização</div>
+      <div class="script-line pm-line">"Faz sentido. Para ser transparente com você: temos 3 itens já comprometidos para essa sprint que afetam 8 clientes no total. A integração com Salesforce seria a quarta prioridade entrando em um espaço já cheio. Tenho duas perguntas antes de decidirmos: quanto tempo o time do cliente X gasta nessa exportação manual hoje? E qual é o MRR deles comparado com os outros clientes afetados pelas entregas já comprometidas?"</div>
+      <div class="script-note">Por quê: você não está negando o pedido — está pedindo os dados para tomar a decisão certa. Isso reposiciona você como parceiro, não como obstáculo.</div>
+
+      <div class="script-role pm">PM — Passo 3: Ofereça alternativas reais</div>
+      <div class="script-line pm-line">"Enquanto levantamos esses dados, tenho duas opções que podemos considerar: primeiro, posso entregar um export automático via CSV essa semana — não é a integração nativa, mas resolve 80% do problema deles em 2 dias de trabalho. Segundo, se você confirmar que o MRR deles justifica mudar a prioridade, podemos realinhar a sprint juntos — mas aí precisamos decidir o que sai para a integração entrar."</div>
+      <div class="script-note">Por quê: você nunca diz não sem oferecer um caminho. E quando há trade-off, você coloca a decisão de volta para o stakeholder — que tem o contexto de negócio que você pode não ter.</div>
+    </div>
+
+    <h3>Os 3 erros mais comuns ao dizer não</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Erro</th><th>O que acontece</th><th>Como evitar</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Dizer não sem contexto</strong></td>
+            <td>"Não está nos planos para esse trimestre." Gera ressentimento e a percepção de que produto não ouve o negócio.</td>
+            <td>Sempre explique o que está competindo pela mesma capacidade. Torne o trade-off visível.</td>
+          </tr>
+          <tr>
+            <td><strong>Dizer sim para evitar conflito</strong></td>
+            <td>O item entra no roadmap, não sai nunca, e vira uma promessa não cumprida que corrói confiança.</td>
+            <td>Um não honesto agora vale mais que um sim que você não vai cumprir. Stakeholders preferem previsibilidade a agrado.</td>
+          </tr>
+          <tr>
+            <td><strong>Escalar para o chefe</strong></td>
+            <td>"Deixa eu ver com meu manager." Sinaliza que você não tem autonomia e incentiva o stakeholder a sempre ir direto ao seu gestor.</td>
+            <td>Tenha critérios claros de priorização documentados e compartilhados. Quando você diz não, está aplicando critérios acordados — não uma preferência pessoal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 6: PROMPTS -->
+  <div id="prompts">
+    <div class="section-num">06 — Prompts de IA</div>
+    <h2>Prompts prontos para priorização</h2>
+
+    <p>Copie, cole e substitua as variáveis em <span style="color:var(--orange);font-family:'JetBrains Mono',monospace;font-size:13px">[colchetes]</span>. Testados com Claude e ChatGPT.</p>
+
+    <h3>Prompt 1 — Estruturar análise de priorização</h3>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span style="font-size:14px">🤖</span>
+        <span class="prompt-label">Prompt — Análise RICE</span>
+      </div>
+      <div class="prompt-body">Você é um PM sênior com 10 anos de experiência em produtos SaaS B2B.
+
+Preciso priorizar os seguintes itens de backlog para o próximo ciclo:
+<span class="prompt-var">[liste os itens, um por linha]</span>
+
+Contexto do produto:
+- Estágio: <span class="prompt-var">[MVP / crescimento / escala]</span>
+- Time de engenharia: <span class="prompt-var">[X pessoas]</span>
+- Principal métrica do trimestre: <span class="prompt-var">[ex: reduzir churn de X% para Y%]</span>
+- Maior dor do usuário hoje: <span class="prompt-var">[descrição]</span>
+
+Para cada item, me ajude a:
+1. Estimar um score RICE com justificativa para cada dimensão
+2. Identificar riscos ou pontos cegos que o RICE não captura
+3. Sugerir perguntas de validação antes de priorizar
+4. Apontar dependências entre os itens
+
+Seja direto. Se um item claramente não deveria estar no backlog agora, diga isso.</div>
+    </div>
+
+    <h3>Prompt 2 — Montar argumentação para stakeholder</h3>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span style="font-size:14px">🤖</span>
+        <span class="prompt-label">Prompt — Argumentação</span>
+      </div>
+      <div class="prompt-body">Preciso apresentar minha decisão de priorização para <span class="prompt-var">[cargo do stakeholder]</span> que pediu para priorizar <span class="prompt-var">[item X]</span>.
+
+Minha decisão foi <span class="prompt-var">[priorizar / não priorizar]</span> porque: <span class="prompt-var">[suas razões]</span>
+
+O que está competindo pela mesma capacidade: <span class="prompt-var">[itens Y e Z, com impacto estimado]</span>
+
+Me ajude a estruturar uma argumentação que:
+1. Valide a importância do pedido do stakeholder (sem falsidade)
+2. Torne o trade-off visível com dados
+3. Ofereça uma alternativa ou caminho para o futuro
+4. Termine com uma proposta de próximo passo claro
+
+Tom: direto, respeitoso, orientado a negócio. Sem jargão de produto.</div>
+    </div>
+
+    <h3>Prompt 3 — Identificar o que está faltando na priorização</h3>
+    <div class="prompt-block">
+      <div class="prompt-header">
+        <span style="font-size:14px">🤖</span>
+        <span class="prompt-label">Prompt — Revisão crítica</span>
+      </div>
+      <div class="prompt-body">Este é meu roadmap para o próximo trimestre:
+<span class="prompt-var">[cole seu roadmap ou lista de itens priorizados]</span>
+
+Objetivo do trimestre: <span class="prompt-var">[seu OKR principal]</span>
+
+Faça uma revisão crítica como um GPM experiente:
+1. Quais itens provavelmente não contribuem para o objetivo principal?
+2. O que pode estar faltando — dívida técnica, segurança, retenção?
+3. Algum item tem risco técnico alto que pode comprometer a entrega?
+4. O que você cortaria se precisasse reduzir o escopo em 30%?
+5. Que pergunta eu deveria estar me fazendo e não estou?
+
+Seja honesto. Prefiro ouvir os problemas agora do que descobrir em produção.</div>
+    </div>
+
+    <div class="callout callout-orange" style="margin-top:32px">
+      <strong>Como usar IA em priorização sem perder o julgamento:</strong> use os prompts para estruturar o raciocínio e identificar pontos cegos, não para tomar a decisão. A IA não conhece o contexto político da sua empresa, a confiança que você tem (ou não tem) nos dados, nem o histórico de decisões que levaram ao estado atual do produto. Esse contexto é seu — e é o que transforma um score em uma boa decisão.
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bottom-nav">
+    <button class="nav-btn">← Módulo 02 · Discovery</button>
+    <button class="nav-btn">Módulo 04 · Entrega →</button>
+  </div>
+
+</div>
+
+<script>
+  // Scroll suave para seções
+  function scrollTo(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+  }
+
+  // Progress bar por scroll
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const scrolled = doc.scrollTop;
+    const total = doc.scrollHeight - doc.clientHeight;
+    const pct = Math.round((scrolled / total) * 100);
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+  });
+
+  // Highlight sidebar por scroll
+  const sections = ['intro','frameworks','quando-falham','planilha','roadmap','nao','prompts'];
+  const items = document.querySelectorAll('.sidebar-item');
+  window.addEventListener('scroll', () => {
+    let current = 0;
+    sections.forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < 120) current = i;
+    });
+    items.forEach(i => i.classList.remove('active'));
+    if (items[current]) items[current].classList.add('active');
+  });
+</script>
+</body>
+</html>
