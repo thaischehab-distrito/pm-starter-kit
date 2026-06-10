@@ -1,1 +1,107 @@
-<!-- PRD Básico — Documento de Requisitos | Entrega -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRD Básico — Documento de Requisitos — PM Starter Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1c1917;--ink2:#44403c;--ink3:#78716c;--paper:#fafaf8;--cream:#f5f0e8;--cream2:#ede8df;--accent:#c2410c;--accent-dim:#fff7ed;--teal:#0f766e;--teal-dim:#f0fdfa;--border:#e7e5e4;--surface:#fff;--r:10px;--r-lg:16px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.65}
+.nav{position:sticky;top:0;z-index:100;background:#1c1917;border-bottom:1px solid rgba(255,255,255,0.08);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:'Lora',serif;font-size:15px;font-weight:700;color:#fff;text-decoration:none}.nav-logo span{color:var(--accent)}
+.nav-back{font-size:13px;color:rgba(255,255,255,0.55);text-decoration:none;display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:40px;border:1px solid rgba(255,255,255,0.12)}.nav-back:hover{color:#fff}
+.wrap{max-width:800px;margin:0 auto;padding:0 24px 80px}
+.page-header{padding:56px 0 40px;border-bottom:1px solid var(--border);margin-bottom:44px}
+.cat-tag{font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+h1{font-family:'Lora',serif;font-size:clamp(26px,4vw,40px);font-weight:700;color:var(--ink);line-height:1.15;letter-spacing:-0.01em;margin-bottom:12px}
+.page-desc{font-size:16px;color:var(--ink3);line-height:1.75;font-weight:300}
+h2{font-family:'Lora',serif;font-size:21px;font-weight:700;color:var(--ink);margin:44px 0 14px;padding-top:44px;border-top:1px solid var(--cream2)}
+h2:first-of-type{border-top:none;padding-top:0;margin-top:4px}
+p{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px}
+strong{color:var(--ink);font-weight:600}
+.callout{border-radius:var(--r-lg);padding:18px 22px;margin:20px 0;font-size:14px;line-height:1.75}
+.callout-warm{background:var(--accent-dim);border-left:3px solid var(--accent);color:#7c2d12}
+.callout-teal{background:var(--teal-dim);border-left:3px solid var(--teal);color:#134e4a}
+.tpl-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);margin:20px 0;overflow:hidden;box-shadow:0 2px 12px rgba(28,25,23,0.07)}
+.tpl-header{background:var(--cream);padding:12px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)}
+.tpl-step-num{font-size:11px;font-weight:700;color:var(--accent);letter-spacing:0.06em;text-transform:uppercase}
+.tpl-step-name{font-family:'Lora',serif;font-size:15px;font-weight:600;color:var(--ink)}
+.tpl-row{display:grid;grid-template-columns:140px 1fr;gap:16px;padding:12px 20px;border-bottom:1px solid var(--cream2);align-items:start}
+.tpl-row:last-child{border-bottom:none}
+.tpl-label{font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink3);padding-top:2px}
+.tpl-value{font-size:14px;color:var(--ink2);line-height:1.65}
+.tpl-positive{color:#166534}.tpl-negative{color:#991b1b}.tpl-neutral{color:#854d0e}
+.tpl-table{width:100%;border-collapse:collapse;font-size:13px;border:1px solid var(--border);overflow:hidden}
+.tpl-table thead{background:var(--cream)}
+.tpl-table th{padding:10px 14px;text-align:left;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink3);border-bottom:1px solid var(--border)}
+.tpl-table td{padding:10px 14px;border-bottom:1px solid var(--cream2);color:var(--ink2)}
+.tpl-table tr:last-child td{border-bottom:none}
+.score-high{color:#166534;font-weight:700}.score-mid{color:#854d0e;font-weight:600}.score-low{color:#991b1b;font-weight:600}
+.tag-teal{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--teal-dim);color:var(--teal)}
+.tag-warm{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;background:var(--accent-dim);color:var(--accent)}
+.tag-low{display:inline-block;font-size:11px;font-weight:600;padding:2px 9px;border-radius:20px;background:#fee2e2;color:#991b1b}
+.prompt-block{background:#f0fdf4;border:1px solid rgba(15,118,110,0.2);border-radius:var(--r-lg);margin:20px 0;overflow:hidden}
+.prompt-header{background:rgba(15,118,110,0.08);padding:10px 16px;font-size:12px;font-weight:700;color:var(--teal);border-bottom:1px solid rgba(15,118,110,0.15)}
+.prompt-body{padding:16px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#065f46;line-height:1.75;white-space:pre-wrap}
+footer{text-align:center;padding:48px 24px;border-top:1px solid var(--border);margin-top:40px}
+footer a{color:var(--accent);text-decoration:none;font-weight:600;font-size:14px}
+@media(max-width:640px){.wrap{padding:0 16px}.tpl-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">PM<span>.</span>starterkit</a>
+  <a href="index.html" class="nav-back">&#8592; Voltar</a>
+</nav>
+<div class="wrap">
+  <div class="page-header">
+    <div class="cat-tag">Entrega</div>
+    <h1>PRD Básico — Documento de Requisitos</h1>
+    <p class="page-desc">Um PRD que o time de engenharia realmente lê — preenchido com exemplo real e anotações de PM.</p>
+  </div>
+  
+<h2>O que é um PRD e para que serve?</h2>
+<p>Um PRD (Product Requirements Document) alinha todo o time sobre o que está sendo construído, por quê, para quem e como o sucesso será medido. Não é uma especificação técnica — é uma comunicação de intenção e contexto para toda a equipe.</p>
+<div class="callout callout-warm"><strong>Erro mais comum:</strong> PRDs longos demais que ninguém lê. Um bom PRD cabe em uma página. Se precisar de mais, você ainda não entendeu o problema bem o suficiente para começar a construir.</div>
+<h2>Template preenchido — Feature: Notificações de Vencimento</h2>
+<div class="tpl-block">
+  <div class="tpl-header"><span class="tpl-step-num">Contexto e problema</span></div>
+  <div class="tpl-row"><div class="tpl-label">Problema</div><div class="tpl-value">45% dos churns no último trimestre mencionaram "perdi o prazo de um contrato importante" como fator de decisão. Usuários não percebem vencimentos com antecedência suficiente para agir.</div></div>
+  <div class="tpl-row"><div class="tpl-label">Para quem</div><div class="tpl-value">Gestores de contrato em empresas de 50 a 500 funcionários que gerenciam mais de 20 contratos simultaneamente.</div></div>
+  <div class="tpl-row"><div class="tpl-label">Por que agora</div><div class="tpl-value">Apareceu em 8 das últimas 10 entrevistas de churn. É o bloqueador número 1 de retenção neste trimestre.</div></div>
+</div>
+<div class="tpl-block">
+  <div class="tpl-header"><span class="tpl-step-num">Solução proposta</span></div>
+  <div class="tpl-row"><div class="tpl-label">O que faremos</div><div class="tpl-value">Notificações automáticas por email e in-app quando contratos estão a 30, 15 e 7 dias do vencimento.</div></div>
+  <div class="tpl-row"><div class="tpl-label">O que NÃO faremos</div><div class="tpl-value">SMS (fase 2). Renovação automática de contrato (fora do escopo). App mobile (roadmap Q4).</div></div>
+  <div class="tpl-row"><div class="tpl-label">Hipótese</div><div class="tpl-value">Se os usuários receberem alertas com antecedência suficiente, conseguirão agir antes do vencimento, reduzindo o churn relacionado a contratos perdidos em pelo menos 20%.</div></div>
+</div>
+<div class="tpl-block">
+  <div class="tpl-header"><span class="tpl-step-num">Requisitos funcionais</span></div>
+  <div class="tpl-row"><div class="tpl-label">RF1</div><div class="tpl-value">O sistema envia email automático para o responsável pelo contrato 30, 15 e 7 dias antes do vencimento.</div></div>
+  <div class="tpl-row"><div class="tpl-label">RF2</div><div class="tpl-value">O usuário consegue configurar quais contratos quer monitorar e com quantos dias de antecedência quer ser avisado.</div></div>
+  <div class="tpl-row"><div class="tpl-label">RF3</div><div class="tpl-value">Notificação in-app aparece no dashboard quando há contratos vencendo nos próximos 7 dias.</div></div>
+  <div class="tpl-row"><div class="tpl-label">RF4</div><div class="tpl-value">O usuário pode desativar notificações por contrato específico sem desativar para todos os outros.</div></div>
+</div>
+<div class="tpl-block">
+  <div class="tpl-header"><span class="tpl-step-num">Métricas de sucesso</span></div>
+  <div class="tpl-row"><div class="tpl-label">Primária</div><div class="tpl-value">Redução de 20% no churn com menção a "prazo de contrato" nas entrevistas de saída — medido em 90 dias</div></div>
+  <div class="tpl-row"><div class="tpl-label">Secundária</div><div class="tpl-value">70% dos usuários com notificações ativas abrem o email de alerta (taxa de abertura)</div></div>
+  <div class="tpl-row"><div class="tpl-label">Guardrail</div><div class="tpl-value">Taxa de unsubscribe abaixo de 15% — se ultrapassar, revisamos frequência e copy dos emails</div></div>
+</div>
+<div class="tpl-block">
+  <div class="tpl-header"><span class="tpl-step-num">Dependências e riscos</span></div>
+  <div class="tpl-row"><div class="tpl-label">Dependência</div><div class="tpl-value">Integração com provedor de email (Sendgrid já configurado na plataforma). Template de email aprovado pelo design.</div></div>
+  <div class="tpl-row"><div class="tpl-label">Risco técnico</div><div class="tpl-value tpl-positive">Baixo — funcionalidade bem conhecida pelo time, sem incerteza técnica relevante.</div></div>
+  <div class="tpl-row"><div class="tpl-label">Risco de produto</div><div class="tpl-value tpl-neutral">Médio — usuários podem achar emails excessivos. Mitigação: começar com frequência conservadora e ajustar com dados reais.</div></div>
+</div>
+
+</div>
+<footer>
+  <p style="font-size:13px;color:var(--ink3);margin-bottom:12px">Criado por Thais Chehab &middot; PM de Produtos de IA</p>
+  <a href="index.html">&#8592; Voltar ao PM Starter Kit</a>
+</footer>
+</body>
+</html>
